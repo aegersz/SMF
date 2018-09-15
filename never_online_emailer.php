@@ -9,7 +9,7 @@ $tbpref = "smf209_";
 $domain = "forum.site-name.org";
 
 $days_since_registered = 30;
-$do_email = 1; 	// enable to send emails
+$do_email = 0; 	// enable to send emails
 $do_delete = 0; // enable to remove members forcefully (NOT ADVISABLE as "Forum > Maintenance > Routine" repairs are required afterwards)
 
 $connect = new mysqli($servername, $username, $password, $dbname);
