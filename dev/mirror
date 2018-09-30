@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+
+#
+# mirror live web system (SGT zone) to the intranet (AEST zone)
+#
+
+# ADJUST TIME OFFSET FOR DST !
+diff=-2
+
+bdate=$(date '+%d-%m-%Y' -d "$diff hours")
+btime=$(date '+%d-%m-%Y_%H-%M-%S' -d "$diff hours")
+
+echo
+echo    Copy html directories as is ...
+rsync   -zpaAPve ssh --delete --exclude-from=/data/exclusions-special root@site-name.org:/var/www/html/ /forum/html_special/
+echo
+echo    Merge html directories ...
+rsync   -zpaAPve ssh --exclude-from=/data/exclusions root@site-name.org:/var/www/html/ /forum/html/
+chown   -R apache:apache /var/www/html
+echo
+echo    Copy html directories locally ...
+rsync   -paAPv /forum/html/ /var/www/html/
+echo
+echo    Copy database_smf209_$bdate.sql ...
+rsync   -zpaAPve ssh root@site-name.org:/SQL/database_smf209_$bdate.sql \
+                /forum/SQL/
+echo
+echo    Archive database_smf209_$bdate.sql to database_smf209_$btime.sql ...
+rsync   -paAPv /forum/SQL/database_smf209_$bdate.sql \
+                /forum/SQL/database_smf209_$btime.sql
+
+#
+# rename internal links and restore the DB
+#
+
+# ADJUST LIVE AND DEV NAMES/ADDRESSES !
+# "db_links_convert_smf.sh"
+#
+live="site-name.org"
+dev="192.168.0.180"
+
+sed "s|://'$live'/index.php/topic|://'$dev'/index.php/topic|g" /forum/SQL/database_smf209_$bdate.sql > /forum/SQL/database_smf209_NL_$bdate.sql
+
+echo
+echo    Restore the database ...
+pv /forum/SQL/database_smf209_NL_$bdate.sql | mysql -u root -proot smf209
+
+echo
+echo    "Run repair_settings.php !"
+echo
+echo    Copy the SMF unique files ...
+rsync   -zpaAPve ssh --include-from=/data/inclusions --exclude="*" root@site-name.org:/var/www/html/ /forum/html_unique/
+echo
+echo    Copy the SQL unique files ...
+rsync   -zpaAPve ssh root@site-name.org:/SQL/db*.sql /forum/SQL/
