@@ -39,17 +39,21 @@ rsync   -paAPv /forum/SQL/database_smf209_$bdate.sql \
 live="site-name.org"
 dev="192.168.0.180"
 
-sed "s|://'$live'/index.php/topic|://'$dev'/index.php/topic|g" /forum/SQL/database_smf209_$bdate.sql > /forum/SQL/database_smf209_NL_$bdate.sql
+sed "s|://'$live'/index.php/topic|://'$dev'/index.php/topic|g" \
+	/forum/SQL/database_smf209_$bdate.sql > /forum/SQL/database_smf209_NL_$bdate.sql
 
 echo
 echo    Restore the database ...
-pv /forum/SQL/database_smf209_NL_$bdate.sql | mysql -u root -proot smf209
+pv /forum/SQL/database_smf209_NL_$bdate.sql | mysql -udbuser -pdbpass smf209
 
 echo
-echo    "Run repair_settings.php !"
+echo    "Run repair_settings.php ASAP !"
 echo
 echo    Copy the SMF unique files ...
 rsync   -zpaAPve ssh --include-from=/data/inclusions --exclude="*" root@site-name.org:/var/www/html/ /forum/html_unique/
 echo
 echo    Copy the SQL unique files ...
 rsync   -zpaAPve ssh root@site-name.org:/SQL/db*.sql /forum/SQL/
+
+echo
+echo "done !"
