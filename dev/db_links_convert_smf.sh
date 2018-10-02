@@ -1,7 +1,8 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-live="site-name.org"
-dev="192.168.0.180"
+live="forum.drugs-and-users.org/index.php/topic"
+dev="192.168.0.180/index.php/topic"
 
-sed "s|://'$live'/index.php/topic|://'$dev'/index.php/topic|g" /rsync-live-dbbackup > /rsync-live-dbbackup-newlinks
+sed "s|$live|$dev|g" /rsync-live-dbbackup > /rsync-live-dbbackup-newlink
+echo $?
 
