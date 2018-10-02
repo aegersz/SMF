@@ -19,33 +19,21 @@ rsync   -zpaAPve ssh --exclude-from=/data/exclusions root@site-name.org:/var/www
 chown   -R apache:apache /var/www/html
 echo
 echo    Copy html directories locally ...
-rsync   -paAPv /forum/html/ /var/www/html/
+rsync   -paAPv 	/forum/html/ /var/www/html/
 echo
 echo    Copy database_smf209_$bdate.sql ...
 rsync   -zpaAPve ssh root@site-name.org:/SQL/database_smf209_$bdate.sql \
                 /forum/SQL/
 echo
 echo    Archive database_smf209_$bdate.sql to database_smf209_$btime.sql ...
-rsync   -paAPv /forum/SQL/database_smf209_$bdate.sql \
-                /forum/SQL/database_smf209_$btime.sql
-
-#
-# rename internal links and restore the DB
-#
-
-# ADJUST LIVE AND DEV NAMES/ADDRESSES !
-# "db_links_convert_smf.sh"
-#
-live="site-name.org"
-dev="192.168.0.180"
-
-sed "s|://'$live'/index.php/topic|://'$dev'/index.php/topic|g" \
-	/forum/SQL/database_smf209_$bdate.sql > /forum/SQL/database_smf209_NL_$bdate.sql
-
+rsync   -paAPv 	/forum/SQL/database_smf209_$bdate.sql \
+            	/forum/SQL/database_smf209_$btime.sql
+echo
+echo	Rename the internal links ...
+sh 	/bin/db_links_convert_smf.sh
 echo
 echo    Restore the database ...
-pv /forum/SQL/database_smf209_NL_$bdate.sql | mysql -udbuser -pdbpass smf209
-
+pv 	/forum/SQL/database_smf209_newlinks_$bdate.sql | mysql -udbuser -pdbpass smf209
 echo
 echo    "Run repair_settings.php ASAP !"
 echo
