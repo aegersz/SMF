@@ -1,0 +1,11 @@
+body {
+  background: url(roblaserpic2.jpg) no-repeat center left;
+  background-position: 70% 0;
+    -ms-background-size: cover;
+    -o-background-size: cover;
+    -moz-background-size: cover;
+    -webkit-background-size: cover;
+  background-size: cover;
+  content: "";
+  opacity: 0.90;
+}
