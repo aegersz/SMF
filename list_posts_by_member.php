@@ -8,7 +8,13 @@ $dbname = "smf209";
 $poster = "smfadmin";
 $timezone = "Australia";
 
-date_default_timezone_set(' $timezone' );
+date_default_timezone_set("Australia/Sydney");
+
+echo <<< EOF
+<head>
+<meta charset="UTF-8">
+</head>
+EOF;
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -25,22 +31,4 @@ if ($result->num_rows > 0) {
                 echo PHP_EOL;
                 echo "<hr> <strong>" . $row['subject'] . "</strong> by <strong>" . $row['poster_name'] . "</strong> on ";
                 $datePost = $row["poster_time"];
-                $datePost_month = date("m", $datePost);
-                $datePost_day = date("d", $datePost);
-                $datePost_year = date("Y", $datePost);
-                $datePost_hour = date("h", $datePost);
-                $datePost_minute = date("i", $datePost);
-                $datePost_second = date("s", $datePost);
-                echo $datePost_day . "/" . $datePost_month . "/" . $datePost_year . " at " . $datePost_hour . "/" . $datePost_minute . "/" . $datePost_second;
-                echo "<br/>";
-                echo " ". PHP_EOL ."<br/>";
-                echo $row['body']. PHP_EOL. "<br/>";
-                echo " ". PHP_EOL ."<br/>";
-        }
-} else {
-        echo "0 results";
-}
-
-$conn->close();
-?>
 
